@@ -1,0 +1,302 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Chatbot</h2>
+    <div id="chatbox" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:scroll;">
+        {% for msg in messages %}
+            <p><strong>{{ msg.sender }}:</strong> {{ msg.text }}</p>
+        {% endfor %}
+    </div>
+
+    <form id="chat-form">
+        <input type="text" id="message" autocomplete="off" required />
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        $('#chat-form').on('submit', function(e) {
+            e.preventDefault();
+            var message = $('#message').val();
+            $('#chatbox').append('<p><strong>user:</strong> ' + message + '</p>');
+            $('#message').val('');
+
+            $.post("{% url 'chat_api' %}", {
+                'message': message,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data) {
+                $('#chatbox').append('<p><strong>bot:</strong> ' + data.message + '</p>');
+                $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
+            });
+        });
+    </script>
+</body>
+</html> {% endcomment %}
+
+{% comment %} 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      width: 400px;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background: #4a90e2;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+    }
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .message {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .user {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #f1f0f0;
+      align-self: flex-start;
+    }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+    .chat-input button {
+      padding: 10px 15px;
+      background: #4a90e2;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Chatbot</div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type your message..."/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = text;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === "") return;
+      appendMessage("user", text);
+      userInput.value = "";
+
+      setTimeout(() => {
+        const botReply = getBotResponse(text);
+        appendMessage("bot", botReply);
+      }, 500);
+    }
+
+    function getBotResponse(input) {
+      input = input.toLowerCase();
+      if (input.includes("hello")) return "Hi there! How can I help you?";
+      if (input.includes("help")) return "Sure, I can assist you. What do you need help with?";
+      if (input.includes("your name")) return "I'm a chatbot created to assist you.";
+      return "I'm not sure how to respond to that. Try asking something else!";
+    }
+
+    userInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mental Health Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f0f3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: #89CFF0;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f9fcfd;
+    }
+
+    .message {
+      margin: 12px 0;
+      padding: 12px 16px;
+      border-radius: 16px;
+      max-width: 80%;
+      line-height: 1.5;
+    }
+
+    .user {
+      background: #d1f5d3;
+      align-self: flex-end;
+    }
+
+    .bot {
+      background: #f0f0f0;
+      align-self: flex-start;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .chat-input button {
+      padding: 14px 20px;
+      background: #89CFF0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .chat-input button:hover {
+      background: #72bde1;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Mental Health Chatbot</div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="How are you feeling today?"/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.textContent = text;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage("user", text);
+      userInput.value = "";
+
+      setTimeout(() => {
+        const botReply = getBotResponse(text);
+        appendMessage("bot", botReply);
+      }, 600);
+    }
+
+    function getBotResponse(message) {
+      message = message.toLowerCase();
+      if (message.includes("sad") || message.includes("depressed"))
+        return "I'm really sorry you're feeling this way. Remember, you're not alone and things can get better.";
+      if (message.includes("anxious") || message.includes("worried"))
+        return "Take a deep breath. You're doing the best you can. I'm here with you.";
+      if (message.includes("happy") || message.includes("good"))
+        return "That's wonderful to hear! Keep embracing those positive feelings.";
+      if (message.includes("help"))
+        return "I'm here to listen. If it's urgent, please talk to a trusted person or reach out to a professional.";
+      if (message.includes("thank"))
+        return "You're very welcome. I'm always here to chat.";
+      return "Tell me more about how you're feeling. I'm here to support you.";
+    }
+
+    userInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
